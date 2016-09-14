@@ -1,5 +1,5 @@
 set -e
 
 mkdir -p build
-g++ chapter1/theory.c -o build/theory -g -std=c++11
+g++ chapter3/ex3_3.c -o build/theory -g -std=c++11
 ./build/theory

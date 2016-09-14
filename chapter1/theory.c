@@ -1,34 +1,25 @@
+#include <ctype.h>
 #include <stdio.h>
 
-int binsearch(int x, int v[], int n) {
-  int low, high, mid;
+int atoi(char s[]) {
+  int i, n, sign;
 
-  low = 0;
-  high = n - 1;
-  while (low < high) {
-    mid = (low + high)/2;
-    if (x <= v[mid]) {
-      high = mid;
-    } else {
-      low = mid + 1;
-    }
-  }
-  
-  if (x == v[low]) {
-    return low;
-  } else {
-    return high;
-  }
+  for (i = 0; isspace(s[i]); i++);
 
-  return -1;
+  sign = (s[i] == '-') ? -1 : 1;
+
+  if (s[i] == '+' || s[i] == '-') {
+    i++;
+  } 
+  for (n=0; isdigit(s[i]); i++)
+    n = 10 * n + (s[i] - '0');
+  return sign*n;
 }
 
-int main() {
-  int x, n, c;
-  int v[] = {2, 3, 5, 6, 8, 9, 12, 16, 17, 19, 23, 39};
+main() {
+  int f;
+  char num[] = "        -234";
 
-  x = 39;
-  n = 12;
-  c = binsearch(x, v, n);
-  printf("%d\n", c);
+  f = atoi(num);
+  printf("%d ", f);
 }
