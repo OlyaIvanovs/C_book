@@ -23,7 +23,7 @@ int bufp = 0;       /* next free position in buf */
 
 int main() {
   int type;
-  double op2;
+  double op2, op1, op3;
   char s[MAXOP];
 
   while ((type = getop(s)) != EOF) {
@@ -51,6 +51,13 @@ int main() {
         break;
       case '\n':
         printf("\t%.8g\n", pop());
+        break;
+      case '%':
+        op2 = pop();
+        op1 = pop();
+        if (op2 != 0.0) {
+          push(op1 - (int)(op1 / op2) * op2);
+        }
         break;
       default:
         printf("error: unknown command %s\n", s);
@@ -86,17 +93,34 @@ int getop(char s[]) {
   while ((s[0] = c = getch()) == ' ' || c == '\t')
     ;
   s[1] = '\0';
-  if (!isdigit(c) && c != '.') {
+
+  if (!isdigit(c) && c != '.' && c != '-') {
     return c;
   }
-  i = 0;
+
+  i = 0; 
+
+  if (c == '-') {
+    if (!isdigit(c = getch())) {
+      return '-';
+    } else {
+      s[++i] = c;
+    }
+  }
+  
   if (isdigit(c)) {
-    while (isdigit(s[++i]) = c = getch())
+    while (isdigit(s[++i] = c = getch()))
+      ;
+  }
+
+  if (c == '.') {
+    while (isdigit(s[++i] = c = getch()))
       ;
   }
   s[i] = '\0';
-  if (c != EOF)
+  if (c != EOF) {
     ungetch(c);
+  }
   return NUMBER;
 }
 
