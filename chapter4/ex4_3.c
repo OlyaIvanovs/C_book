@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
+#include <string.h>
 
 
 #define MAXOP 100
 #define NUMBER '0'
+#define MATH '1'
 #define MAXVAL 100  /* maximum depth of val stack */
 #define BUFSIZE 100
 
@@ -12,7 +15,11 @@ int getop(char []);
 void push(double);
 double pop(void);
 int getch(void);
+void swap();
+void dublicate();
 void ungetch(int);
+void showTop();
+void mathfunc();
  
 int sp = 0;  /* next free stack position */
 double val[MAXVAL];  /* value stack */
@@ -30,6 +37,9 @@ int main() {
     switch(type) {
       case NUMBER:
         push(atof(s));
+        break;
+      case MATH:
+        mathfunc(s);
         break;
       case '+':
         push(pop() + pop());
@@ -58,6 +68,15 @@ int main() {
         if (op2 != 0.0) {
           push(op1 - (int)(op1 / op2) * op2);
         }
+        break;
+      case '&':
+        showTop();
+        break;
+      case '}':
+        dublicate();
+        break;
+      case '$':
+        swap();
         break;
       default:
         printf("error: unknown command %s\n", s);
@@ -94,11 +113,21 @@ int getop(char s[]) {
     ;
   s[1] = '\0';
 
-  if (!isdigit(c) && c != '.' && c != '-') {
+  if (!isalnum(c) && c != '.' && c != '-') {
     return c;
   }
 
-  i = 0; 
+  i = 0;
+
+  if (isalpha(c)) {
+    while (isalpha(s[++i] = c = getch()))
+      ;
+    s[i] = '\0';
+    if (c != EOF) {
+      ungetch(c);
+    }
+    return MATH;
+  }
 
   if (c == '-') {
     if (!isdigit(c = getch())) {
@@ -112,11 +141,11 @@ int getop(char s[]) {
     while (isdigit(s[++i] = c = getch()))
       ;
   }
-
   if (c == '.') {
     while (isdigit(s[++i] = c = getch()))
       ;
   }
+
   s[i] = '\0';
   if (c != EOF) {
     ungetch(c);
@@ -137,4 +166,47 @@ void ungetch(int c) {
   } else {
     buf[bufp++] = c;
   }
+}
+
+
+// to print the the top elements of the stack
+void showTop(void) {
+  if (sp > 0) {
+    printf("%8g\n", val[sp-1]);
+  } else {
+    printf("error: stack empty\n");
+  }
+}
+
+// to dublicate the the top elements of the stack
+void dublicate() {
+  double el = pop();
+
+  push(el);
+  push(el);
+}
+
+void swap() {
+  double op1, op2;
+
+  op1 = pop();
+  op2 = pop();
+  push(op2);
+  push(op1);
+}
+
+void mathfunc(char s[]) {
+  int type;
+
+  printf("mathfunc");
+  printf("%s\n", s);
+
+  if(strcmp(s, "sin")) {
+    printf("lalalal");
+  }
+
+/*  switch(s) {
+    case "sin":
+      printf("sin");
+      break;*/
 }
