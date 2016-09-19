@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <math.h>
 #include <string.h>
+#include <math.h>
 
 
 #define MAXOP 100
@@ -184,6 +184,7 @@ void dublicate() {
 
   push(el);
   push(el);
+  ++sp;
 }
 
 void swap() {
@@ -197,16 +198,31 @@ void swap() {
 
 void mathfunc(char s[]) {
   int type;
+  double op2;
 
-  printf("mathfunc");
-  printf("%s\n", s);
-
-  if(strcmp(s, "sin")) {
-    printf("lalalal");
+  if(strcmp(s, "sin") == 0) {
+    if (sp > 0) {
+      push(sin(pop()));
+    } else {
+      printf("error: stack empty\n");
+    }
+  } else if(strcmp(s, "cos") == 0) {
+    if (sp > 0) {
+      push(cos(pop()));
+    } else{
+      printf("error: stack empty\n");
+    }
+  } else if(strcmp(s, "exp") == 0) {
+    if (sp > 0) {
+      push(exp(pop()));
+    } else{
+      printf("error: stack empty\n");
+    }
+  } else if(strcmp(s, "pow") == 0) {
+    if (sp > 1) {
+      push(pow(pop(), pop()));
+    } else{
+      printf("error: stack empty\n");
+    }
   }
-
-/*  switch(s) {
-    case "sin":
-      printf("sin");
-      break;*/
 }
