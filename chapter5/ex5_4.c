@@ -4,9 +4,10 @@
 int strend(char *s, char *t) {
   int n, k;
 
+  n = 0;
   while (*++s);
   while (*++t) {
-    ++n;
+    n++;
   };
 
   for (k=0 ; *s == *t; --s, --t, ++k) {
@@ -14,16 +15,14 @@ int strend(char *s, char *t) {
       return 1;
     }
   }
-    
   return 0;
 }
 
 int main() {
   int res;
-  char str1[MAXLINE] = "ma";
+  char str1[MAXLINE] = "myla ramu ggggmama";
   char str2[MAXLINE] = "myla ramu mama";
 
   res = strend(str2, str1);
-  printf("%s\n", str2);
   printf("%d\n", res);
 }
