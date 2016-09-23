@@ -1,33 +1,17 @@
 #include <stdio.h>
 
-void strcat1(char *s, char *t) {
-  while (*s != '\0') {
-    s++;
-  }
-  for ( ; *s == *t; s++, t++) {
-    if (*s == '\0') {
-      printf("%s", s);
-    }
-  }
-    
-  return;
+#define MAXLINE 100
 
-  // while ((*s = *t) != '\0') {
-  //   printf("mmmm");
-  //   s++;
-  //   t++;
-  // }
-  // printf("%s", s);
+void strcat1(char *s, char *t) {
+  while (*++s);
+  while (*s++ = *t++);
 }
 
 
 int main() {
-  char *s;
-  char *t;
+  char str1[MAXLINE] = "mama";
+  char str2[MAXLINE] = "myla ramu";
 
-  s = "mama";
-  t = "myla ramu";
-
-  strcat1(s, t);
-
+  strcat1(str1, str2);
+  printf("%s\n", str1);
 }
