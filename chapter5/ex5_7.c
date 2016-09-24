@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAXLINES 5000
 #define MAXLEN 1000 /* max length of any input line */
@@ -10,13 +11,13 @@ char *alloc(int);
 int readlines(char *lineptr[], int nlines);
 int getline1(char *, int);
 void writelines(char *lineptr[], int nlines);
-void qsort(char *lineptr[], int left, int right);
+void my_qsort(char *lineptr[], int left, int right);
 
 int main() {
   int nlines;
 
   if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
-    qsort(lineptr, 0, nlines - 1);
+    my_qsort(lineptr, 0, nlines - 1);
     writelines(lineptr, nlines);
     return 0;
   } else {
@@ -31,7 +32,7 @@ int readlines(char *lineptr[], int maxlines) {
 
   nlines = 0;
   while((len = getline1(line, MAXLEN)) > 0) {
-    if (nlines >= maxlines || (p = alloc(len)) == NULL) {
+    if (nlines >= maxlines || (p = malloc(len)) == NULL) {
       return -1;
     } else {
       line[len-1] = '\0';
@@ -41,6 +42,18 @@ int readlines(char *lineptr[], int maxlines) {
   }
   return nlines;
 }
+
+int readlines2() {
+  int len, nlines;
+  char *p, line[MAXLEN];
+
+  nlines = 0;
+  while((len = getline1(line, MAXLEN)) > 0) {
+
+  }
+  return nlines;
+}
+
 
 void writelines(char *lineptr[], int nlines) {
   int i;
@@ -64,7 +77,7 @@ int getline1(char s[], int lim) {
   return i;
 }
 
-void qsort(char *v[], int left, int right) {
+void my_qsort(char *v[], int left, int right) {
   int i, last;
   void swap(char *v[], int i, int j);
 
@@ -79,8 +92,8 @@ void qsort(char *v[], int left, int right) {
     }
   }
   swap(v, left, last);
-  qsort(v, left, last-1);
-  qsort(v, last+1, right);
+  my_qsort(v, left, last-1);
+  my_qsort(v, last+1, right);
 }
 
 void swap(char *v[], int i, int j) {
