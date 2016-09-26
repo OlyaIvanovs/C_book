@@ -4,7 +4,7 @@
 
 void strcat1(char *s, char *t) {
   while (*++s);
-   while (*s++ = *t++);
+  while (*s++ = *t++);
   printf("%s\n", s);
 }
 
