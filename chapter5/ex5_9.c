@@ -6,15 +6,25 @@ static char daytab[2][13] = {
 };
 
 /* day_of_year: set day of year from month & day */
-int day_of_year(int year, int month, int day) {
-  int i, leap;
-  // if (month < 1 || month > 12 || day < 1) {
-  //   return;
-  // }
+int day_of_year(int year, int month, int day){
+  int leap, dayt, i;
+
+  if (month < 1 || month > 12 || day < 1) {
+    return -1;
+  }
   leap = year%4 == 0 && year%100 != 0 || year%400 == 0;
+  char *s = &daytab[leap][1];
+  i = 1;
+
   printf("%d\n", leap);
-  for (i = 1; i <  month; i++) {
-    day += daytab[leap][i];
+  
+  while (*s) {
+    if (i >= month) {
+      return day;
+    }
+    day += *s;
+    s++;
+    i++;
   }
   return day;
 }
@@ -24,14 +34,20 @@ void month_day(int year, int yearday, int *pmonth, int *pday) {
   int i, leap;
 
   leap = year%4 == 0 && year%100 != 0 || year%400 == 0;
-  // if (leap && yearday > 366 || !leap && yearday > 365 || yearday < 1) {
-  //   return 0;
-  // }
-  for (i = 1; yearday > daytab[leap][i]; i++) {
-    yearday -= daytab[leap][i];
+  if (leap && yearday > 366 || !leap && yearday > 365 || yearday < 1) {
+    return;
+  }
+  char *s = &daytab[leap][1];
+  i = 1;
+
+  while (yearday > *s) {
+    yearday -= *s;
+    i++;
+    s++;
   }
   *pmonth = i;
   *pday = yearday;
+  
 }
 
 int main() {
