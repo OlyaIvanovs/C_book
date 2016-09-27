@@ -1,14 +1,40 @@
 #include <stdio.h>
+#include <string.h>
+#define MAXLINE 1000
 
-char *month_name(int n) {
+int getline(char *line, int max;)
 
-  static char *name[] = {
-    "Illegal month",
-    "January", "February", "March", 
-    "April", "May", "June", 
-    "July", "August", "September", 
-    "October", "November", "December"
-  };
+int main(int argc, char *argv[]) {
+  char line[MAXLINE];
+  long lineno = 0;
+  int c, except = 0, number = 0, found = 0;
 
-  return (n < 1 || n > 12) ? name[0] : name[n];
+  while (--argc > 0 && (*++argv)[0] == '-') {
+    while (c = *++argv[0]) {
+      switch(c) {
+        case 'x':
+          except = 1;
+          break;
+        case 'n':
+          number = 1;
+          break;
+        default:
+          printf("find: illegal option %c\n", c);
+          argc = 0;
+          found = -1;
+          break;
+      }
+    }
+  }
+
+  if (argc != 1) {
+    printf("Usage: find pattern\n");
+  } else {
+    while (getline(line, MAXLINE) > 0) {
+      if(strstr(line, argv[1]) != NULL) {
+        printf("%s", line);
+        found++;
+      }
+    }
+  }
 }
