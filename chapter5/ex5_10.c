@@ -29,49 +29,47 @@ double pop(void) {
 
 // expr , which evaluates a reverse Polish expression from the command line
 int main(int argc, char *argv[]) {
-  int type;
+  int type, k;
   double op2;
   char c;
 
   while (--argc > 0) {
-    while (c = **argv) {
-      argv++;
-      if (isdigit(c)) {
-        type = NUMBER;
-      } else {
-        type = c;
-      }
-      switch(type) {
-        case NUMBER:
-          push(atof(*argv));
-          break;
-        case '+':
-          push(pop() + pop());
-          break;
-        case '*':
-          push(pop()*pop());
-          break;
-        case '-':
-          op2 = pop();
-          push(pop() - op2);
-          break;
-        case '/':
-          op2 = pop();
-          if (op2 != 0.0) {
-            push(pop() / op2);
-          } else {
-            printf("error: zero divisor\n");
-          }
-          break;
-        default:
-          printf("error: unknown command %c\n", type);
-          break;
+    *++argv;
+    if (isdigit(**argv)) {
+      type = NUMBER;
+    } else {
+      type = **argv;
+    }
+    switch(type) {
+      case NUMBER:
+        push(atof(*argv));
+        break;
+      case '+':
+        push(pop() + pop());
+        break;
+      case '*':
+        push(pop()*pop());
+        break;
+      case '-':
+        op2 = pop();
+        push(pop() - op2);
+        break;
+      case '/':
+        op2 = pop();
+        if (op2 != 0.0) {
+          push(pop() / op2);
+        } else {
+          printf("error: zero divisor\n");
+        }
+        break;
+      default:
+        printf("error: unknown command %c\n", type);
+        break;
       }
   }
-  }
-
-  if (argc != 1) {
-    printf("Usage: exp 2 3 + pattern\n");
+  
+  if (sp == 1) {
+    printf("%.2f\n", val[0]);
   }
 }
 
