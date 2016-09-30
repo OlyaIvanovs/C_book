@@ -50,10 +50,17 @@ int numcmp(char *s1, char *s2) {
 int main(int argc, char *argv[]) {
   int nlines;
   int numeric = 0;
+  int reverse = 0;
 
-  if (argc > 1 && strcmp1(argv[1], "-n") == 0) {
-    numeric = 1;
+
+  while (*argv++) {
+    if (strcmp1(*argv, "-n") == 0) {
+      numeric = 1;
+    } else if (strcmp1(*argv, "-r") == 0) {
+      reverse = 1;
+    }
   }
+
   if ((nlines = readlines(lineptr, MAXLINES)) >= 0) { 
     qsort1((void**) lineptr, 0, nlines-1,
       (int (*)(void*,void*))(numeric ? numcmp : strcmp1));
@@ -63,7 +70,6 @@ int main(int argc, char *argv[]) {
     printf("input too big to sort\n");
     return 1;
   }
-}
 
 void qsort1(void *v[], int left, int right, int (*comp)(void *, void *)) {
   int i, last;
@@ -98,7 +104,6 @@ void writelines(char *lineptr[], int nlines) {
     printf("%s\n", lineptr[i]);
   }
 }
-
 
 int readlines(char *lineptr[], int maxlines) {
   int len, nlines;
