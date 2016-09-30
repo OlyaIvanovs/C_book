@@ -29,7 +29,8 @@ int readlines(char *lineptr[], int maxlines) {
 
   nlines = 0;
   while ((len = getline1(line, MAXLEN)) > 0) {
-    if (nlines > MAXLINES || *p = malloc(len) == NULL) {
+    if (nlines > MAXLINES || (p = malloc(len)) == NULL) {
+      printf("Input is too long to tail");
       return -1;
     } else {
       line[len - 1] = '\0';
@@ -40,17 +41,28 @@ int readlines(char *lineptr[], int maxlines) {
   return nlines;
 }
 
-void writetail(char *lineptr[], int lines) { 
-  while (*++lineptr) {
-    printf("%s\n", *lineptr);
+void writetail(char *lineptr[], int exceptlines) { 
+  int i;
+
+  i = 0;
+
+  while (*lineptr) {
+    if (++i > exceptlines) {
+      printf("%s\n", *lineptr);
+    }
+    lineptr++;
   }
 }
 
 int main(int argc, char *argv[]) {
-  int nlines;
+  int nlines, taillines;
 
+  taillines = 2;
   if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
-    writetail(lineptr, nlines);
+    if (taillines > nlines) {
+      taillines = 0;
+    }
+    writetail(lineptr, nlines - taillines);
     return 0;
   } else {
     printf("Input is too short to tail");
