@@ -8,7 +8,7 @@
 char *lineptr[MAXLINES];
 int readlines(char *lineptr[], int nlines);
 void writelines(char *lineptr[], int nlines);
-void qsort1(void *lineptr[], int left, int right, int (*comp)(void *, void *));
+void qsort1(void *lineptr[], int left, int right, int (*comp)(void *, void *), int reverse);
 
 int getline1(char s[], int lim) {
   int c, i;
@@ -53,25 +53,28 @@ int main(int argc, char *argv[]) {
   int reverse = 0;
 
 
-  while (*argv++) {
-    if (strcmp1(*argv, "-n") == 0) {
+  while (*argv) {
+    if (strcmp(*argv, "-n") == 0) {
       numeric = 1;
-    } else if (strcmp1(*argv, "-r") == 0) {
+    } else if (strcmp(*argv, "-r") == 0) {
       reverse = 1;
     }
+    argv++;
   }
 
   if ((nlines = readlines(lineptr, MAXLINES)) >= 0) { 
     qsort1((void**) lineptr, 0, nlines-1,
-      (int (*)(void*,void*))(numeric ? numcmp : strcmp1));
+      (int (*)(void*,void*))(numeric ? numcmp : strcmp1), reverse);
     writelines(lineptr, nlines);
     return 0;
   } else {
     printf("input too big to sort\n");
     return 1;
   }
+}
 
-void qsort1(void *v[], int left, int right, int (*comp)(void *, void *)) {
+
+void qsort1(void *v[], int left, int right, int (*comp)(void *, void *), int reverse) {
   int i, last;
   void swap(void *v[], int, int);
 
@@ -80,13 +83,20 @@ void qsort1(void *v[], int left, int right, int (*comp)(void *, void *)) {
   }
   swap(v, left, (left + right)/2);
   last = left;
-  for (i = left+1; i <= right; i++) {
-    if((*comp)(v[i], v[left]) < 0)
-      swap(v, ++last, i);
+  if (reverse) {
+    for (i = left+1; i <= right; i++) {
+      if((*comp)(v[i], v[left]) > 0)
+        swap(v, ++last, i);
+    }
+  } else {
+    for (i = left+1; i <= right; i++) {
+      if((*comp)(v[i], v[left]) < 0)
+        swap(v, ++last, i);
+    }
   }
   swap(v, left, last);
-  qsort1(v, left, last-1, comp);
-  qsort1(v, last+1, right, comp);
+  qsort1(v, left, last-1, comp, reverse);
+  qsort1(v, last+1, right, comp, reverse);
 }
 
 void swap(void *v[], int i, int j) {
