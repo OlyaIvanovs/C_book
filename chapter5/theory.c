@@ -1,120 +1,94 @@
-#include <stdio.h>
+#include <srdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <ctype.h>
 
-#define MAXLINES 5000
-#define MAXLEN 1000
+#define MAXTOKEN 100
 
-char *lineptr[MAXLINES];
-int readlines(char *lineptr[], int nlines);
-void writelines(char *lineptr[], int nlines);
-void qsort1(void *lineptr[], int left, int right, int (*comp)(void *, void *));
+enum { NAME, PARENS, BRACKETS}
 
-int getline1(char s[], int lim) {
-  int c, i;
+int gettoken(void);
+int tokentype;
+char token[MAXTOKEN];
+char name[MAXTOKEN];
+char datatype[MAXTOKEN];
+char out[1000];
 
-  for (i=0; i < lim -1 && (c = getchar()) != EOF && c != '\n'; ++i) {
-    s[i] = c;
+
+// dcl: parce a declarator
+void dcl(void) {
+  int ns;
+
+  for (ns = 0; gettoken() == '*';) {
+    ns++;
   }
-  if (c == '\n') {
-    s[i] = c;
-    ++i;
+  dirdcl();
+  while (ns-- > 0) {
+    strcat(out, " pointer to")
   }
-  s[i] = '\0';
-  return i;
 }
 
-int strcmp1(char *s, char *t) {
-  for (; *s == *t; s++, t++) {
-    if (*s == '\0') {
-      return -1;
+
+void dirdcl(void) {
+  int type;
+
+  if (tokentype == '(') {
+    dcl();
+    if (tokentype != ')') {
+      printf("error: missing ) \n", );
     }
-  }
-  return *s - *t;
-}
-
-int numcmp(char *s1, char *s2) {
-  double v1, v2;
-
-  v1 = atof(s1);
-  v2 = atof(s2);
-  if (v1 < v2) {
-    return -1;
-  } else if (v1 > v2) {
-    return 1;
+  } else if (tokentype == NAME) {
+    strcpy(name, token);
   } else {
-    return 0;
+    printf("error: expected name or (dcl)\n");
   }
-}
 
-int main(int argc, char *argv[]) {
-  int nlines;
-  int numeric = 0;
-
-  if (argc > 1 && strcmp1(argv[1], "-n") == 0) {
-    numeric = 1;
-  }
-  if ((nlines = readlines(lineptr, MAXLINES)) >= 0) { 
-    qsort1((void**) lineptr, 0, nlines-1,
-      (int (*)(void*,void*))(numeric ? numcmp : strcmp1));
-    writelines(lineptr, nlines);
-    return 0;
-  } else {
-    printf("input too big to sort\n");
-    return 1;
-  }
-}
-
-void qsort1(void *v[], int left, int right, int (*comp)(void *, void *)) {
-  int i, last;
-  void swap(void *v[], int, int);
-
-  if (left >= right) {
-    return;
-  }
-  swap(v, left, (left + right)/2);
-  last = left;
-  for (i = left+1; i <= right; i++) {
-    if((*comp)(v[i], v[left]) < 0)
-      swap(v, ++last, i);
-  }
-  swap(v, left, last);
-  qsort1(v, left, last-1, comp);
-  qsort1(v, last+1, right, comp);
-}
-
-void swap(void *v[], int i, int j) {
-  void *temp;
-
-  temp = v[i];
-  v[i] = v[j];
-  v[j] = temp;
-}
-
-void writelines(char *lineptr[], int nlines) {
-  int i;
-
-  for (i=0; i < nlines; i++) {
-    printf("%s\n", lineptr[i]);
-  }
-}
-
-
-int readlines(char *lineptr[], int maxlines) {
-  int len, nlines;
-  char *p, line[MAXLEN];
-
-  nlines = 0;
-
-  while ((len = getline1(line, MAXLEN)) > 0) {
-    if (nlines >= maxlines || (p = malloc(len)) == NULL) {
-      return -1;
+  while ((type=gettoken()) == PARENS || type == BRACKETS) {
+    if (type == PARENS) {
+      strcat(out, "fuction returning");
     } else {
-      line[len-1] = '\0';
-      strcpy(p, line);
-      lineptr[nlines++] = p;
+      strcat(out, "array");
+      strcat(out, token);
+      strcat(out " of");
     }
   }
+}
 
-  return nlines;
+
+int main() {
+  while (gettoken() != EOF) {
+    strcpy(datatype, token);
+    out[0] = '\0';
+    dcl();
+    if (tokentype != '\n') {
+      printf("syntax error\n");
+    }
+    printf("%s: %s %s\n", name, out, datatype);
+  }
+  return 0;
+}
+
+
+int gettoken(void) {
+  int c, getch(void);
+  void ungetch(int);
+  char *p = token;
+
+  while ((c = getch()) == ' ' || c == '\t');
+  if (c == '(') {
+    if ((c = getch()) == ')') {
+      strcpy(token, "()");
+      return tokentype = PARENS;
+    } else {
+      ungetch(c);
+      return tokentype = '(';
+    }
+  } else if (c == '[') {
+    for (*p++ = c; (*p++ = getch()) != ']';);
+    *p = '\0';
+    return tokentype = BRACKETS;
+  } else if (isalpha(c)) {
+    for (*p++ = c; isalnum(c = getch()); ) {
+      *p++ = c;
+    }
+  } 
 }
