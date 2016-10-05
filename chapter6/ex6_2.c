@@ -10,18 +10,21 @@ char buf[BUFSIZE];
 int bufp = 0;
 
 struct tnode {
-  char *word;
+  char *root;
+  char *words[MAXWORD];
   int count;
   struct tnode *left;
   struct tnode *right;
 };
 
+struct tnode *addtree_root(struct tnode *, char *, int n);
 struct tnode *addtree(struct tnode *, char *);
 struct tnode *talloc(void);
 void treeprint(struct tnode *);
 void dublicateprint(struct tnode *);
 int getword(char *, int);
-char *my_strdup(char *s);
+char *my_strdup(char *s, int n);
+char *my_strdup2(char *s);
 
 
 /* word frequency count */
@@ -29,78 +32,53 @@ int main() {
   struct tnode *root;
   char word[MAXWORD];
 
+  int first = 4;
+
   root = NULL;
   while (getword(word, MAXWORD) != EOF) {
     if (isalpha(word[0])) {
-      root = addtree(root, word);
+      root = addtree(root, word, first);
     }
   }
   treeprint(root);
-  printf("Dublicate lists\n\n");
-  dublicateprint(root);
   return 0;
 }
 
-struct tnode *addtree(struct tnode *p, char *w) {
+struct tnode *addtree_root(struct tnode *p, char *w, int n) {
   int cond;
+  int k;
 
   if (p == NULL) {
     p = talloc(); /* make a new node */
-    p->word = my_strdup(w);
+    p->root = my_strdup(w, n);
+    p->words[0] = my_strdup2(w);
     p->count = 1;
     p->left = p->right = NULL;
-  } else if ((cond = strcmp(w, p->word)) == 0) {
+  } else if ((cond = strncmp(w, p->root, n)) == 0) {
+    k = p->count;
+    p->words[k] = my_strdup2(w);
     p->count++;
   } else if (cond < 0) {
-    p->left = addtree(p->left, w);
+    p->left = addtree(p->left, w, n);
   } else {
-    p->right = addtree(p->right, w);
+    p->right = addtree(p->right, w, n);
   }
   return p;
 }
 
 
 void treeprint(struct tnode *p) {
+  int i;
+
   if (p != NULL) {
     treeprint(p->left);
-    printf("%4d %s\n", p->count, p->word);
+    if (p->count > 1) {
+      printf("%4d %s\n", p->count, p->root);
+      for (i=0; i < p->count; i++) {
+        printf("%s\n", p->words[i]);
+      }
+    }
     treeprint(p->right);
-  }
-}
-
-int level = 0;
-void dublicateprint(struct tnode *p) {
-  int duplicate_l = 0;
-  int duplicate_r = 0;
-
-  if (p != NULL) {
-    if ((p->left) && strncmp(p->left->word, p->word, 6) == 0) {
-      printf("%s\n", p->left->word);
-      duplicate_l = 1;
-    } 
-
-    if ((p->right) && strncmp(p->right->word, p->word, 6) == 0) {
-      printf("%s\n", p->right->word);  
-      duplicate_r = 1;
-    } 
-
-    if ((level == 0) && (duplicate_r || duplicate_l)) {
-      printf("%s\n", p->word); 
-    } 
-
-    level++;
-
-    if (duplicate_r || duplicate_l) {
-      printf("\n");
-      level = 0;
-    }
-
-    if (!duplicate_r && !duplicate_l) {
-      level = 0;
-    }
-
-    dublicateprint(p->left);
-    dublicateprint(p->right);
   }
 }
 
@@ -108,7 +86,16 @@ struct tnode *talloc(void) {
   return  (struct tnode *) malloc(sizeof(struct tnode));
 }
 
-char *my_strdup(char *s) {
+char *my_strdup(char *s, int n) {
+  char *p;
+
+  p = (char *)malloc(strlen(s) + 1);
+  if (p != NULL)
+    strncpy(p, s, n);
+  return p;
+}
+
+char *my_strdup2(char *s) {
   char *p;
 
   p = (char *)malloc(strlen(s) + 1);

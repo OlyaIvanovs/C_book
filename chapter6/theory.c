@@ -32,6 +32,10 @@ int main() {
   while (getword(word, MAXWORD) != EOF) {
     if (isalpha(word[0])) {
       root = addtree(root, word);
+      while(*root++) {
+        printf("lallala %d\n", root->count);
+        // root++;
+      }
     }
   }
   treeprint(root);
