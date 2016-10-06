@@ -39,12 +39,19 @@ char *my_strdup2(char *s);
 
 
 /* word frequency count */
-int main() {
+int main(int argc, char **argv) {
   struct tnode *root;
   char word[MAXWORD];
+  int first;
 
-  int first = 4;
+  if (argc == 3) {
+    if (strcmp("-n", argv[1]) == 0)
+      first = atoi(argv[2]);
+  } else {
+    first = 4;
+  } 
 
+  printf("first %d\n", first);
   root = NULL;
   while (getword(word, MAXWORD) != EOF) {
     if (isalpha(word[0])) {
@@ -136,7 +143,7 @@ struct tnode_word *walloc(void) {
 char *my_strdup(char *s, int n) {
   char *p;
 
-  p = (char *)malloc(strlen(s) + 1);
+  p = (char *)malloc(n + 1);
   if (p != NULL)
     strncpy(p, s, n);
   return p;
@@ -179,6 +186,7 @@ int getword(char *word, int lim) {
     *w++ = c;
   }
 
+  /* mamamma mamamma papapap mammaa ghghg mamamam papapap amamamam */
   //Skip comments
   if (c == '/' && (c = getch()) == '*') {
     while ((c = getch()) != '*')
