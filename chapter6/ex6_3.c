@@ -23,6 +23,7 @@ struct tnode *talloc(void);
 void treeprint(struct tnode *);
 int getword(char *, int);
 char *my_strdup(char *s);
+int binsearch(int x, int v[1000]);
 
 
 int main() {
