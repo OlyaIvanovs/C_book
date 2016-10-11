@@ -7,23 +7,30 @@
 #define MAXWORD 100
 #define BUFSIZE 100
 
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_GREEN "\x1b[32m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_BLUE "\x1b[34m"
+#define ANSI_COLOR_RESET "\x1b[0m"
+
 char buf[BUFSIZE];
 int bufp = 0;
 
 
 struct tnode {
   char *name;
+  char *classname;
   struct tnode *parent;
 };
 
 char *keywords[] = {
-  "a", "div", "h1", "p" 
+  "a", "div", "h1", "p", "span"
 };
 
 #define NKEYS (sizeof keywords / sizeof(keywords[0]))
 
 struct tnode *stack[MAXLEN];
-struct tnode *stack2[MAXLEN];
+struct tnode *tags_stack[MAXLEN];
 
 int getch(void);
 void ungeth(int c);
@@ -38,14 +45,14 @@ static int stack_size;
 int main() {
   struct tnode *root;
   char word[MAXWORD];
-  int k;
-  int l =1;
+  int k, l;
   int i = 0;
   int m = 0;
 
   root = NULL;
   while (getword(word) != EOF) {
     if (word[0] == '/') {
+      l = 1;
       while(word[l] != '\0') {
         word[l-1] = word[l];
         l++;
@@ -64,10 +71,17 @@ int main() {
     } else if ((binsearch(word, keywords, NKEYS)) >= 0) {
       root = addnode(root, word);
       stack[i] = root;
-      stack2[m] = root;
+      tags_stack[m] = root;
       stack_size = i;
       i++;
       m++;
+    } else if (strcmp("class", word) == 0) {
+      while (getword(word) != '>') {
+        if (isalpha(word[0])) {
+          stack[stack_size]->classname = my_strdup(word);
+          break;
+        }
+      }
     }
   }
 
@@ -76,11 +90,25 @@ int main() {
     printf("Error: missing %s tag\n", stack[k]->name);
   }
 
-  // for (k=1; k<m; k++) {
-  //   if ((stack2[k]->parent) == stack2[0]) {
-  //     printf("%s\n", stack2[k]->name);
-  //   }
-  // }
+
+  // print all tags
+  for (k=0; k<m; k++) {
+    printf(ANSI_COLOR_BLUE "tag:" ANSI_COLOR_RESET "%s\n", tags_stack[k]->name);
+    if (tags_stack[k]->parent != NULL) {
+      printf(ANSI_COLOR_RED "parent:" ANSI_COLOR_RESET "%s.%s\n", 
+        tags_stack[k]->parent->name, tags_stack[k]->parent->classname);
+    }
+    printf(ANSI_COLOR_GREEN "class:" ANSI_COLOR_RESET "%s\n", tags_stack[k]->classname);
+    printf("\n");
+  }
+
+  // find siblings/find childrens
+  printf("Chilfren for first el\n");
+  for (k=1; k<m; k++) {
+    if ((tags_stack[k]->parent) == tags_stack[0]) {
+      printf("%s\n", tags_stack[k]->name);
+    }
+  }
   return 0;
 }
 
@@ -90,6 +118,7 @@ struct tnode *addnode(struct tnode *p, char *w) {
   p = talloc(); /* make a new node */
   p->name = my_strdup(w);
   p->parent = stack[stack_size];
+  p->classname = NULL;
   return p;
 }
 
@@ -98,19 +127,27 @@ int getword(char *word) {
   void ungetch(int);
   char *w = word;
 
-  while(isspace(c = getch())) 
+  while(isspace(c = getch()))  
     ;
 
   if ( (c == '<') && (isalpha(c = getch()) || (c == '/'))) {
     *w++ = c;
-    while ((c = getch()) != '>'){
+    while (isalnum(c = getch())) {
       *w++ = c;
     }
     *w = '\0';
     return word[0];
-  }
+  } 
 
-  if (!isalpha(c)) {
+  if (isalpha(c)) {
+    *w++ = c;
+    while (isalnum(c = getch())) {
+      *w++ = c;
+    }
+    ungetch(c);
+    *w = '\0';
+    return word[0];
+  } else {
     *w = '\n';
     return c;
   }

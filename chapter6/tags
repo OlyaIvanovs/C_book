@@ -1,0 +1,66 @@
+tag:div
+class: hoverBox
+
+tag:div
+[31mparent:[0mdiv.hoverBox
+class: obscuresLayer
+
+tag:a
+[31mparent:[0mdiv.hoverBox
+class: contentelem912
+
+tag:span
+[31mparent:[0ma.contentelem912
+class: appeared
+
+tag:span
+[31mparent:[0ma.contentelem912
+class: contentelem9121
+
+tag:a
+[31mparent:[0mdiv.hoverBox
+class: contentelem
+
+tag:span
+[31mparent:[0ma.contentelem
+class: appeared
+
+tag:span
+[31mparent:[0ma.contentelem
+class: contentelem9131
+
+tag:div
+class: hoverBox
+
+tag:div
+[31mparent:[0mdiv.hoverBox
+class: obscuresLayer
+
+tag:a
+[31mparent:[0mdiv.hoverBox
+class: contentelem912
+
+tag:span
+[31mparent:[0ma.contentelem912
+class: appeared
+
+tag:span
+[31mparent:[0ma.contentelem912
+class: contentelem9121
+
+tag:a
+[31mparent:[0mdiv.hoverBox
+class: contentelem913
+
+tag:span
+[31mparent:[0ma.contentelem913
+class: appeared
+
+tag:span
+[31mparent:[0ma.contentelem913
+class: contentelem9131
+
+Chilfren for first el
+div
+a
+a
