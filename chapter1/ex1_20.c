@@ -4,6 +4,7 @@
 int main() {
   int c, i, x;
 
+  x = 0;
   while ((c = getchar()) != EOF) {
     if (c == '\n') {
       x = 0;
