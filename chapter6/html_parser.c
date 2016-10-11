@@ -23,10 +23,11 @@ char *keywords[] = {
 #define NKEYS (sizeof keywords / sizeof(keywords[0]))
 
 struct tnode *stack[MAXLEN];
+struct tnode *stack2[MAXLEN];
 
 int getch(void);
 void ungeth(int c);
-int getword(char *word, int lim);
+int getword(char *word);
 struct tnode *addnode(struct tnode *p, char *w);
 int binsearch(char *word, char *keywords[], int n);
 char *my_strdup(char *s);
@@ -38,23 +39,48 @@ int main() {
   struct tnode *root;
   char word[MAXWORD];
   int k;
+  int l =1;
   int i = 0;
+  int m = 0;
 
   root = NULL;
-  while (getword(word, MAXWORD) != EOF) {;
-    if ((binsearch(word, keywords, NKEYS)) >= 0) {
+  while (getword(word) != EOF) {
+    if (word[0] == '/') {
+      while(word[l] != '\0') {
+        word[l-1] = word[l];
+        l++;
+      }
+      word[l-1] = '\0';
+      if ((binsearch(word, keywords, NKEYS)) >= 0) {
+        if (strcmp(stack[stack_size]->name, word) == 0) {
+          stack[stack_size] = NULL;
+          stack_size--;
+          i--;
+        } else {
+          printf("Error: missing %s tag\n", stack[stack_size]->name);
+          return 0;
+        }
+      }
+    } else if ((binsearch(word, keywords, NKEYS)) >= 0) {
       root = addnode(root, word);
+      stack[i] = root;
+      stack2[m] = root;
+      stack_size = i;
+      i++;
+      m++;
     }
-    stack[i] = root;
-    stack_size = i;
-    i++;
   }
+
+
   for (k=0; k<i; k++) {
-    printf("%s\n", stack[k]->name);
-    if (stack[k]->parent != NULL) {
-      printf("parent %s\n", stack[k]->parent->name);
-    }
+    printf("Error: missing %s tag\n", stack[k]->name);
   }
+
+  // for (k=1; k<m; k++) {
+  //   if ((stack2[k]->parent) == stack2[0]) {
+  //     printf("%s\n", stack2[k]->name);
+  //   }
+  // }
   return 0;
 }
 
@@ -67,7 +93,7 @@ struct tnode *addnode(struct tnode *p, char *w) {
   return p;
 }
 
-int getword(char *word, int lim) {
+int getword(char *word) {
   int c, getch(void);
   void ungetch(int);
   char *w = word;
@@ -75,7 +101,7 @@ int getword(char *word, int lim) {
   while(isspace(c = getch())) 
     ;
 
-  if ( (c == '<') && (isalpha(c = getch()))) {
+  if ( (c == '<') && (isalpha(c = getch()) || (c == '/'))) {
     *w++ = c;
     while ((c = getch()) != '>'){
       *w++ = c;
