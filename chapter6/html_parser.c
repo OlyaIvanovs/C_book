@@ -21,7 +21,18 @@ struct tnode {
   char *name;
   char *classname;
   struct tnode *parent;
+  struct style *css;
 };
+
+struct style {
+  int height;
+  int width;
+  int x;
+  int y;
+  int color;
+  int bg;
+};
+
 
 char *keywords[] = {
   "a", "div", "h1", "p", "span"
@@ -51,6 +62,7 @@ int main() {
 
   root = NULL;
   while (getword(word) != EOF) {
+    // для закрывающего тега
     if (word[0] == '/') {
       l = 1;
       while(word[l] != '\0') {
@@ -58,6 +70,7 @@ int main() {
         l++;
       }
       word[l-1] = '\0';
+      // удаления тега из списка
       if ((binsearch(word, keywords, NKEYS)) >= 0) {
         if (strcmp(stack[stack_size]->name, word) == 0) {
           stack[stack_size] = NULL;
@@ -68,6 +81,7 @@ int main() {
           return 0;
         }
       }
+      // открывающийся тег
     } else if ((binsearch(word, keywords, NKEYS)) >= 0) {
       root = addnode(root, word);
       stack[i] = root;
@@ -75,6 +89,7 @@ int main() {
       stack_size = i;
       i++;
       m++;
+      // для пол
     } else if (strcmp("class", word) == 0) {
       while (getword(word) != '>') {
         if (isalpha(word[0])) {
@@ -119,6 +134,26 @@ struct tnode *addnode(struct tnode *p, char *w) {
   p->name = my_strdup(w);
   p->parent = stack[stack_size];
   p->classname = NULL;
+  p->css = NULL;
+  return p;
+}
+
+struct tnode *addstyle(struct tnode *p) {
+  int cond;
+
+  p->css->height = NULL;
+  p->css->width = NULL;
+  p->css->x = NULL;
+  p->css->y = NULL;
+  p->css->color = NULL;
+  p->css->bg = NULL;
+  width;
+  x;
+  y;
+  color;
+  bg;
+
+  p = talloc(); /* make a new node */
   return p;
 }
 
