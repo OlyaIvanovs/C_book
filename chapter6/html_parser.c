@@ -16,23 +16,18 @@
 char buf[BUFSIZE];
 int bufp = 0;
 
+struct stylenode {
+  int height;
+  int width;
+  int bg;
+};
 
 struct tnode {
   char *name;
   char *classname;
   struct tnode *parent;
-  struct style *css;
+  struct stylenode *css;
 };
-
-struct style {
-  int height;
-  int width;
-  int x;
-  int y;
-  int color;
-  int bg;
-};
-
 
 char *keywords[] = {
   "a", "div", "h1", "p", "span"
@@ -49,14 +44,20 @@ int getword(char *word);
 struct tnode *addnode(struct tnode *p, char *w);
 int binsearch(char *word, char *keywords[], int n);
 char *my_strdup(char *s);
+
 struct tnode *talloc(void);
+struct stylenode *salloc(void);
 
 static int stack_size;
 
 int main() {
   struct tnode *root;
   char word[MAXWORD];
-  int k, l;
+  char styleline[MAXLEN];
+  char param[MAXLEN];
+  char value[MAXLEN];
+
+  int k, l, c, n;
   int i = 0;
   int m = 0;
 
@@ -89,12 +90,30 @@ int main() {
       stack_size = i;
       i++;
       m++;
-      // для пол
+      // Yазвание класса
     } else if (strcmp("class", word) == 0) {
       while (getword(word) != '>') {
         if (isalpha(word[0])) {
           stack[stack_size]->classname = my_strdup(word);
           break;
+        }
+      }
+      //стили
+    } else if (strcmp("style", word) == 0) {
+      while (getword(word) != '"') ;
+      while (getword(word) != '"') {
+        if (strcmp("height", word) == 0) {
+          while (getword(word) != ';') {
+            if (isalnum(word[0])) {
+              stack[stack_size]->css->height = atoi(word);
+            }
+          }
+        } else if (strcmp("width", word) == 0){
+          while (getword(word) != ';') {
+            if (isalnum(word[0])) {
+              stack[stack_size]->css->width = atoi(word);
+            }
+          }
         }
       }
     }
@@ -134,26 +153,14 @@ struct tnode *addnode(struct tnode *p, char *w) {
   p->name = my_strdup(w);
   p->parent = stack[stack_size];
   p->classname = NULL;
-  p->css = NULL;
+  p->css = salloc();
   return p;
 }
 
-struct tnode *addstyle(struct tnode *p) {
-  int cond;
-
-  p->css->height = NULL;
-  p->css->width = NULL;
-  p->css->x = NULL;
-  p->css->y = NULL;
-  p->css->color = NULL;
-  p->css->bg = NULL;
-  width;
-  x;
-  y;
-  color;
-  bg;
-
-  p = talloc(); /* make a new node */
+struct stylenode *addstyle(struct stylenode *p) {
+  p->height = 0;
+  p->width = 0;
+  p->bg = 0;
   return p;
 }
 
@@ -174,7 +181,7 @@ int getword(char *word) {
     return word[0];
   } 
 
-  if (isalpha(c)) {
+  if (isalnum(c)) {
     *w++ = c;
     while (isalnum(c = getch())) {
       *w++ = c;
@@ -231,4 +238,8 @@ char *my_strdup(char *s) {
 
 struct tnode *talloc(void) {
   return  (struct tnode *) malloc(sizeof(struct tnode));
+}
+
+struct stylenode *salloc(void) {
+  return  (struct stylenode *) malloc(sizeof(struct stylenode));
 }
