@@ -59,7 +59,7 @@ int main() {
 
   int k, l, c, n;
   int i = 0;
-  int m = 0;
+  int tags_num = 0;
 
   root = NULL;
   while (getword(word) != EOF) {
@@ -86,10 +86,10 @@ int main() {
     } else if ((binsearch(word, keywords, NKEYS)) >= 0) {
       root = addnode(root, word);
       stack[i] = root;
-      tags_stack[m] = root;
+      tags_stack[tags_num] = root;
       stack_size = i;
       i++;
-      m++;
+      tags_num++;
       // Yазвание класса
     } else if (strcmp("class", word) == 0) {
       while (getword(word) != '>') {
@@ -126,7 +126,7 @@ int main() {
 
 
   // print all tags
-  for (k=0; k<m; k++) {
+  for (k=0; k<tags_num; k++) {
     printf(ANSI_COLOR_BLUE "tag:" ANSI_COLOR_RESET "%s\n", tags_stack[k]->name);
     if (tags_stack[k]->parent != NULL) {
       printf(ANSI_COLOR_RED "parent:" ANSI_COLOR_RESET "%s.%s\n", 
@@ -138,11 +138,18 @@ int main() {
 
   // find siblings/find childrens
   printf("Chilfren for first el\n");
-  for (k=1; k<m; k++) {
+  for (k=1; k<tags_num; k++) {
     if ((tags_stack[k]->parent) == tags_stack[0]) {
       printf("%s\n", tags_stack[k]->name);
     }
   }
+
+  for (k=0; k<tags_num; k++) {
+      if (tags_stack[k]->css->height) {
+        printf("chaeck style %d\n", tags_stack[k]->css->height);
+      }
+    }
+
   return 0;
 }
 
